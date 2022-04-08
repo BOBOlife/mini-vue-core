@@ -73,15 +73,17 @@ describe('effect', () => {
     obj.foo = 2;
     expect(dummy).toBe(2);
     stop(runner);
-    obj.foo = 3;
+    // obj.foo = 3;
+
+    // obj.foo = obj.foo + 1
+    obj.foo++;
+
     expect(dummy).toBe(2);
 
     // should not run after stop
 
     runner();
     expect(dummy).toBe(3);
-
-
   });
 
   it('onStop', () => {
