@@ -1,5 +1,6 @@
+import { isObject } from "../shared";
 import { track, trigger } from "./effect";
-import { ReactiveFlags } from "./reactive";
+import { reactive, ReactiveFlags } from "./reactive";
 
 // 初始化 避免多次创建
 const get = createGetter();
@@ -17,6 +18,10 @@ function createGetter(isReadonly: boolean = false) {
 
     const res = Reflect.get(target, key);
 
+    if (isObject(res)) {
+      return reactive(res);
+    }
+
     if (!isReadonly) {
       track(target, key);
     }
@@ -31,10 +36,7 @@ function createSetter() {
   };
 }
 
-export const mutableHandlers = {
-  get,
-  set
-};
+export const mutableHandlers = { get, set };
 
 export const readonlyHandlers = {
   get: readonlyGet,
