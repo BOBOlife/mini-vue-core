@@ -21,9 +21,9 @@ describe('ref', () => {
     expect(dummy).toBe(2);
 
     // should not trigger when value same
-    // a.value = 2;
-    // expect(calls).toBe(2);
-    // expect(dummy).toBe(2);
+    a.value = 2;
+    expect(calls).toBe(2);
+    expect(dummy).toBe(2);
 
   });
 
