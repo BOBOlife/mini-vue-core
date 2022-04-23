@@ -3,7 +3,7 @@ import { extend } from "../shared";
 let activeEffect;
 let shouldTrack;
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any;
   deps = [];
   active: boolean = true;
@@ -12,6 +12,7 @@ class ReactiveEffect {
 
   constructor(fn, scheduler?: Function) {
     this._fn = fn;
+    this.scheduler = scheduler;
   }
   run() {
 
