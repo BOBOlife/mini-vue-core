@@ -52,6 +52,9 @@ export function track(target, key) {
   if (!isTracking()) return;
 
   // target ->  key ->  dep
+
+  //  类似于 targetMap = {target: depsMap}
+  //  类似于 depsMap  = { key: dep }
   let depsMap = targetMap.get(target);
 
   if (!depsMap) {
