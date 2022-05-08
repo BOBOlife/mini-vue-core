@@ -1,5 +1,9 @@
 export const App = {
   render() {
+    // SFC .vue
+    // template
+    // render
+
 
     return h('div', 'Hello', this.msg)
   },
