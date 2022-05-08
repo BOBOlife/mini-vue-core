@@ -9,7 +9,7 @@
 typescript + jest，使用TDD的手法进行开发和重构
 
 ## 功能模块
-- [ ] reactive
+- [x] reactive
 - [ ] runtime-core
 - [ ] compiler-core
 
