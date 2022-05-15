@@ -1,5 +1,5 @@
 import { reactive } from "../reactive";
-import { computed } from "./computed";
+import { computed } from "../computed";
 
 describe('computed', () => {
   it('happy path', () => {
