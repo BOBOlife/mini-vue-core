@@ -1,8 +1,10 @@
+import { PublicInstanceProxyHandlers } from './componentPublicInstance';
 export function createComponentInstance(vnode) {
 
   const component = {
     vnode,
-    type: vnode.type
+    type: vnode.type,
+    setupState: {}
   };
 
   return component;
@@ -21,6 +23,8 @@ export function setupComponent(instance) {
 
 function setupStatusfulComponent(instance: any) {
   const Component = instance.type;
+
+  instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers);
   const { setup } = Component;
 
   if (setup) {
@@ -35,7 +39,8 @@ function handleSetupResult(instance, setupResult: any) {
   // TODO function
 
   if (typeof setupResult === "object") {
-    instance.setupState = setupResult;
+    // 搞一个 setupState 存setup的返回对象 然后通过代理一个对象  查找key 是否在setupState 从而读出来
+    instance.setupState = setupResult; // 世界线回归
   }
 
   finishComponentSetup(instance);

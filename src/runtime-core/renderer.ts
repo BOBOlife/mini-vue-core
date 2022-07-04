@@ -25,7 +25,7 @@ function processComponent(vnode, container) {
   mountComponent(vnode, container);
 }
 function mountElement(vnode: any, container: any) {
-  const el = document.createElement(vnode.type);
+  const el = (vnode.el = document.createElement(vnode.type));
   const { children, props } = vnode;
 
   if (typeof children === 'string') {
@@ -48,19 +48,23 @@ function mountChildren(vnode, container) {
   });
 }
 
-function mountComponent(vnode: any, container) {
-  const instance = createComponentInstance(vnode);
+function mountComponent(initialVNode: any, container) {
+  const instance = createComponentInstance(initialVNode);
 
   setupComponent(instance);
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, initialVNode, container);
 
 }
-function setupRenderEffect(instance: any, container) {
-  const subTree = instance.render(); // 返回的是 h('div',{}, 'xxx') 这样的树
+function setupRenderEffect(instance: any, initialVNode, container) {
+  const { proxy } = instance;
+  // render 返回的是一个h(...) 渲染函数 将它的this指向proxy对象 当调用this.xxx 相当于 proxy.xxx
+  const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
 
   // vnode -> patch
   // vnode -> element -> mountElement
   patch(subTree, container);
+  //  在这里 获取 el
+  initialVNode.el = subTree.el;
 }
 
 
