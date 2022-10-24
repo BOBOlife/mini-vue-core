@@ -19,15 +19,20 @@ function patch(vnode, container) {
     processComponent(vnode, container);
   }
 }
+
 function processElement(vnode, container) {
   mountElement(vnode, container);
 }
+
 function processComponent(vnode, container) {
   mountComponent(vnode, container);
 }
+
 function mountElement(vnode: any, container: any) {
   const el = (vnode.el = document.createElement(vnode.type));
   const { children, props, shapeFlag } = vnode;
+
+  // children
 
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;
@@ -36,9 +41,18 @@ function mountElement(vnode: any, container: any) {
   }
 
   // string  array
+  // props
   for (const key in props) {
     const val = props[key];
-    el.setAttribute(key, val);
+
+    // on + Event name
+    const isOn = (key: string) => /^on[A-Z]/.test(key)
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase()
+      el.addEventListener(event, val)
+    } else {
+      el.setAttribute(key, val);
+    }
   }
   container.append(el);
 }

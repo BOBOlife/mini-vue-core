@@ -8,7 +8,10 @@ export const App = {
     // render
     return h('div', {
       id: 'root',
-      class: ['red', 'hard']
+      class: ['red', 'hard'],
+      onClick() {
+        console.log('click Event')
+      }
     },
       // [h("p", { class: "red" }, "hi"), h("p", { class: "blue" }, "mini-vue")]
       // "hi,ni"
