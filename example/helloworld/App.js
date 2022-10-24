@@ -1,5 +1,7 @@
 import { h } from "../../lib/guide-mini-vue.esm.js";
+import { Foo } from "./Foo.js";
 export const App = {
+  name: 'App',
   // render 必写
   render() {
     window.self = this
@@ -13,10 +15,16 @@ export const App = {
         console.log('click Event')
       }
     },
+      [
+        h('div', {}, 'hello' + this.msg),
+        h(Foo, {
+          count: 1
+        })
+      ]
       // [h("p", { class: "red" }, "hi"), h("p", { class: "blue" }, "mini-vue")]
       // "hi,ni"
       // $el -> get root element
-      'hi，' + this.msg
+      // 'hi，' + this.msg
     )
   },
 
