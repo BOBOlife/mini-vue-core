@@ -1,4 +1,4 @@
-import { h } from '../../lib/guide-mini-vue.esm.js'
+import { h, createTextVNode } from '../../lib/guide-mini-vue.esm.js'
 import { Foo } from './Foo.js';
 
 export const App = {
@@ -11,9 +11,9 @@ export const App = {
   render() {
     const app = h('div', {}, "App")
     // const slotContent = [h("p", {}, '123'), h("p", {}, '456')] // 插槽插入的的内容
-    //  可以具名插槽 指定渲染位置 object key 要改变数据结构
+    //  可以具名插槽 指定渲染位置 object key 要改变数据结构 
     const slotContent = {
-      header: ({ age }) => h("p", {}, 'header' + age),
+      header: ({ age }) => [h("p", {}, 'header' + age), createTextVNode('哈哈哈')], // 必须是虚拟节点
       footer: () => h("p", {}, 'footer')
     }
 
