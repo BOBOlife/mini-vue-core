@@ -1,14 +1,16 @@
-import { h, createTextVNode } from '../../lib/guide-mini-vue.esm.js'
+import { h, createTextVNode, getCurrentInstance } from '../../lib/guide-mini-vue.esm.js'
 import { Foo } from './Foo.js';
 
 export const App = {
   name: 'MyApp',
   setup() {
-    return {
+    const instance = getCurrentInstance()
+    console.log("App:>>", instance);
 
-    }
+    return {}
   },
   render() {
+
     const app = h('div', {}, "App")
     // const slotContent = [h("p", {}, '123'), h("p", {}, '456')] // 插槽插入的的内容
     //  可以具名插槽 指定渲染位置 object key 要改变数据结构 
