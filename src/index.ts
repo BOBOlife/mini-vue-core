@@ -1,1 +1,2 @@
-export * from './runtime-core';
+//出口
+export * from './runtime-dom';
