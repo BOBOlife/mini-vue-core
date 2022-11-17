@@ -68,16 +68,10 @@ export function createRenderer(options) {
       mountChildren(vnode, el, parentComponent);
     }
 
-    // string  array
-    // props
     for (const key in props) {
       const val = props[key];
-
-      // // on + Event name
       hostPatchProp(el, key, val)
     }
-    // container.append(el);
-
     hostInsert(el, container)
   }
 

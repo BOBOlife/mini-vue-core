@@ -10,15 +10,12 @@ document.body.append(game.view)
 
 const renderer = createRenderer({
   createElement(type) {
-    console.log('xxxx', type)
     if (type === "rect") {
       const rect = new PIXI.Graphics()
       rect.beginFill(0xff0000)
       rect.drawRect(0, 0, 100, 100)
       rect.endFill()
-
       return rect
-
     }
   },
   patchProp(el, key, val) {
@@ -28,5 +25,4 @@ const renderer = createRenderer({
     parent.addChild(el)
   }
 })
-console.log(renderer, game.stage)
 renderer.createApp(App).mount(game.stage)
