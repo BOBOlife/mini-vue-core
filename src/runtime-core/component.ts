@@ -1,3 +1,4 @@
+import { proxyRefs } from '..'
 import { initProps } from './componentProps';
 import { PublicInstanceProxyHandlers } from './componentPublicInstance';
 import { shallowReadonly } from '../reactivity/reactive';
@@ -14,6 +15,8 @@ export function createComponentInstance(vnode, parent) {
     slots: {},
     provides: parent ? parent.provides : {},
     parent,
+    isMounted: false,
+    subTree: {},
     emit: () => { }
   };
 
@@ -53,7 +56,7 @@ function handleSetupResult(instance, setupResult: any) {
 
   if (typeof setupResult === "object") {
     // 搞一个 setupState 存setup的返回对象 然后通过代理一个对象  查找key 是否在setupState 从而读出来
-    instance.setupState = setupResult; // 世界线回归
+    instance.setupState = proxyRefs(setupResult); // 世界线回归
   }
 
   finishComponentSetup(instance);
