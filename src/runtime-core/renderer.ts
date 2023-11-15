@@ -13,7 +13,8 @@ export function createRenderer(options) {
     patch(null, vnode, container, null);
   }
 
-  // n1  n2
+  // n1  n2 n1老的虚拟节点 n2 新的虚拟节点
+  // 使用n1 和 n2 进行判断是初始化 还是 更新
   function patch(n1, n2, container, parentComponent) {
     //处理组件
     // 判断类型 是不是element类型
@@ -36,9 +37,9 @@ export function createRenderer(options) {
         break;
     }
   }
-  function processText(n1, vnode: any, container: any) {
-    const { children } = vnode;
-    const textNode = (vnode.el = document.createTextNode(children));
+  function processText(n1, n2: any, container: any) {
+    const { children } = n2;
+    const textNode = (n2.el = document.createTextNode(children));
     container.append(textNode);
   }
 
@@ -48,8 +49,10 @@ export function createRenderer(options) {
 
   function processElement(n1, n2, container, parentComponent) {
     if (!n1) {
+      // init
       mountElement(n2, container, parentComponent);
     } else {
+      // update
       patchElement(n1, n2, container);
     }
   }
@@ -57,7 +60,7 @@ export function createRenderer(options) {
   function patchElement(n1, n2, container) {
     // TODO
     console.log("patchElement");
-    console.log("n1:", n1, "n2", n2);
+    console.log("n1:", n1, "\n", "n2:", n2);
     const oldProps = n1.props || {};
     const newProps = n2.props || {};
   }
@@ -78,7 +81,7 @@ export function createRenderer(options) {
 
   function mountElement(vnode: any, container: any, parentComponent) {
     const el = (vnode.el = hostCreateElement(vnode.type));
-    console.log(vnode.type);
+    // console.log(vnode.type);
     const { children, props, shapeFlag } = vnode;
 
     // children
@@ -116,6 +119,7 @@ export function createRenderer(options) {
         const { proxy } = instance;
         // render 返回的是一个h(...) 渲染函数 将它的this指向proxy对象 当调用this.xxx 相当于 proxy.xxx
         const subTree = (instance.subTree = instance.render.call(proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
+        // console.log("subtree:init", subTree);
         // vnode -> patch
         // vnode -> element -> mountElement
         patch(null, subTree, container, instance);
@@ -125,8 +129,9 @@ export function createRenderer(options) {
       } else {
         console.log("update");
         const { proxy } = instance;
-        const subTree = (instance.subTree = instance.render.call(proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
+        const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
         const preSubTree = instance.subTree;
+        // console.log("subtree:update", subTree, preSubTree);
         instance.subTree = subTree;
         patch(preSubTree, subTree, container, instance);
       }

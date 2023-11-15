@@ -101,9 +101,9 @@ export function triggerEffects(deps) {
   deps &&
     deps.forEach((effectFn) => {
       // 避免无限递归循环  具体原因看上面解释
-      if (effectFn !== activeEffect) {
-        effectToRun.add(effectFn);
-      }
+      // if (effectFn !== activeEffect) {
+      effectToRun.add(effectFn);
+      // }
     });
 
   effectToRun.forEach((effectFn: any) => {
@@ -114,6 +114,7 @@ export function triggerEffects(deps) {
     }
   });
   // for (const effect of deps) {
+  //   console.log(effect);
   //   if (effect.scheduler) {
   //     effect.scheduler();
   //   } else {

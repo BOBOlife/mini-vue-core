@@ -3,8 +3,9 @@ import { h, ref } from "../../lib/guide-mini-vue.esm.js";
 export const App = {
   name: "APP",
   setup() {
-    const count = ref(0);
+    const count = ref(1);
     const onClick = () => {
+      console.log("点击操作");
       count.value++;
     };
 
@@ -14,15 +15,15 @@ export const App = {
     });
     const onChangePropsDemo1 = () => {
       props.value.foo = "new-foo";
-    }
+    };
     const onChangePropsDemo2 = () => {
       props.value.foo = undefined;
-    }
-    const onChangePropsDemo3 = ()=> {
+    };
+    const onChangePropsDemo3 = () => {
       props.value = {
         foo: "foo",
       };
-    }
+    };
     return {
       count,
       onClick,
