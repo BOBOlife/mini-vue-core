@@ -4,6 +4,7 @@ import { ShapeFlags } from "../shared/ShapeFlags";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
+//创建一个自定义渲染器。通过提供平台特定的节点创建以及更改 API，你可以在非 DOM 环境中也享受到 Vue 核心运行时的特性。
 export function createRenderer(options) {
   const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = options;
 

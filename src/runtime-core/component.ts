@@ -1,12 +1,11 @@
-import { proxyRefs } from '..'
-import { initProps } from './componentProps';
-import { PublicInstanceProxyHandlers } from './componentPublicInstance';
-import { shallowReadonly } from '../reactivity/reactive';
-import { emit } from './componentEmit';
-import { initSlots } from './componentSlots';
+import { proxyRefs } from "..";
+import { initProps } from "./componentProps";
+import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { shallowReadonly } from "../reactivity/reactive";
+import { emit } from "./componentEmit";
+import { initSlots } from "./componentSlots";
 
 export function createComponentInstance(vnode, parent) {
-
   const component = {
     vnode,
     type: vnode.type,
@@ -17,19 +16,17 @@ export function createComponentInstance(vnode, parent) {
     parent,
     isMounted: false,
     subTree: {},
-    emit: () => { }
+    emit: () => {},
   };
 
-  component.emit = emit.bind(null, component) as any
+  component.emit = emit.bind(null, component) as any;
 
   return component;
 }
 
-
 export function setupComponent(instance) {
-
-  initProps(instance, instance.vnode.props)
-  initSlots(instance, instance.vnode.children)
+  initProps(instance, instance.vnode.props);
+  initSlots(instance, instance.vnode.children);
 
   setupStatusfulComponent(instance);
 }
@@ -41,9 +38,9 @@ function setupStatusfulComponent(instance: any) {
   const { setup } = Component;
 
   if (setup) {
-    setCurrentInstance(instance)
+    setCurrentInstance(instance);
     const setupResult = setup(shallowReadonly(instance.props), { emit: instance.emit });
-    setCurrentInstance(null)
+    setCurrentInstance(null);
 
     handleSetupResult(instance, setupResult);
   }
@@ -60,18 +57,17 @@ function handleSetupResult(instance, setupResult: any) {
   }
 
   finishComponentSetup(instance);
-
 }
 function finishComponentSetup(instance: any) {
   const Component = instance.type;
   instance.render = Component.render;
 }
 
-let currentInstance = null
+let currentInstance = null;
 export function getCurrentInstance() {
-  return currentInstance
+  return currentInstance;
 }
 
 function setCurrentInstance(instance) {
-  currentInstance = instance
+  currentInstance = instance;
 }

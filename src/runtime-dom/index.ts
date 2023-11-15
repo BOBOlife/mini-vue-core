@@ -1,35 +1,32 @@
 import { createRenderer } from "../runtime-core";
 
 function createElement(type) {
-  return document.createElement(type)
+  return document.createElement(type);
 }
 
 function patchProp(el, key, val) {
-
-  const isOn = (key: string) => /^on[A-Z]/.test(key)
+  const isOn = (key: string) => /^on[A-Z]/.test(key);
   if (isOn(key)) {
     // 注册事件 包括自定义的事件
-    const event = key.slice(2).toLowerCase()
-    el.addEventListener(event, val)
+    const event = key.slice(2).toLowerCase();
+    el.addEventListener(event, val);
   } else {
     el.setAttribute(key, val);
   }
 }
 
 function insert(el, parent) {
-  parent.append(el)
+  parent.append(el);
 }
 
 const renderer: any = createRenderer({
   createElement,
   patchProp,
-  insert
-})
-
+  insert,
+});
 
 export function createApp(...args) {
-  return renderer.createApp(...args)
+  return renderer.createApp(...args);
 }
 
-
-export * from '../runtime-core'
+export * from "../runtime-core";
