@@ -3,6 +3,7 @@ import { createComponentInstance, setupComponent } from "./component";
 import { ShapeFlags } from "../shared/ShapeFlags";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
+import { EMPTY_OBJECT } from "../shared";
 
 //创建一个自定义渲染器。通过提供平台特定的节点创建以及更改 API，你可以在非 DOM 环境中也享受到 Vue 核心运行时的特性。
 export function createRenderer(options) {
@@ -61,16 +62,28 @@ export function createRenderer(options) {
     // TODO
     console.log("patchElement");
     console.log("n1:", n1, "\n", "n2:", n2);
-    const oldProps = n1.props || {};
-    const newProps = n2.props || {};
+    const oldProps = n1.props || EMPTY_OBJECT;
+    const newProps = n2.props || EMPTY_OBJECT;
+    const el = (n2.el = n1.el);
+    patchProps(el, oldProps, newProps);
   }
 
   function patchProps(el, oldProps, newProps) {
-    for (const key in newProps) {
-      const prevProp = oldProps[key];
-      const nextProp = newProps[key];
-      if (prevProp !== nextProp) {
-        hostPatchProp(el, key, oldProps, newProps);
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const prevProp = oldProps[key];
+        const nextProp = newProps[key];
+        if (prevProp !== nextProp) {
+          // 新老prop 不相同的时候 要更新
+          hostPatchProp(el, key, oldProps, nextProp);
+        }
+      }
+      if (oldProps !== EMPTY_OBJECT) {
+        for (const key in oldProps) {
+          if (!Object.prototype.hasOwnProperty.call(newProps, key)) {
+            hostPatchProp(el, key, oldProps[key], null);
+          }
+        }
       }
     }
   }
@@ -94,7 +107,7 @@ export function createRenderer(options) {
 
     for (const key in props) {
       const val = props[key];
-      hostPatchProp(el, key, val);
+      hostPatchProp(el, key, null, val);
     }
     hostInsert(el, container);
   }
