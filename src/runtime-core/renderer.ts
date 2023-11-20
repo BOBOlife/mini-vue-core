@@ -6,6 +6,7 @@ import { Fragment, Text } from "./vnode";
 import { EMPTY_OBJECT } from "../shared";
 import { initProps } from "./componentProps";
 import { shouldUpdateComponent } from "./componentUpdateUtils";
+import { queueJobs } from "./scheduler";
 
 //创建一个自定义渲染器。通过提供平台特定的节点创建以及更改 API，你可以在非 DOM 环境中也享受到 Vue 核心运行时的特性。
 export function createRenderer(options) {
@@ -303,36 +304,44 @@ export function createRenderer(options) {
     setupRenderEffect(instance, initialVNode, container, anchor);
   }
   function setupRenderEffect(instance: any, initialVNode, container, anchor) {
-    instance.update = effect(() => {
-      // 分初始化和更新
-      if (!instance.isMounted) {
-        console.log("init");
-        const { proxy } = instance;
-        // render 返回的是一个h(...) 渲染函数 将它的this指向proxy对象 当调用this.xxx 相当于 proxy.xxx
-        const subTree = (instance.subTree = instance.render.call(proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
-        // console.log("subtree:init", subTree);
-        // vnode -> patch
-        // vnode -> element -> mountElement
-        patch(null, subTree, container, instance, anchor);
-        //  在这里 获取 el
-        initialVNode.el = subTree.el;
-        instance.isMounted = true;
-      } else {
-        console.log("update");
-        const { next, vnode } = instance;
-        if (next) {
-          next.el = vnode.el;
+    instance.update = effect(
+      () => {
+        // 分初始化和更新
+        if (!instance.isMounted) {
+          console.log("init");
+          const { proxy } = instance;
+          // render 返回的是一个h(...) 渲染函数 将它的this指向proxy对象 当调用this.xxx 相当于 proxy.xxx
+          const subTree = (instance.subTree = instance.render.call(proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
+          // console.log("subtree:init", subTree);
+          // vnode -> patch
+          // vnode -> element -> mountElement
+          patch(null, subTree, container, instance, anchor);
+          //  在这里 获取 el
+          initialVNode.el = subTree.el;
+          instance.isMounted = true;
+        } else {
+          console.log("update");
+          const { next, vnode } = instance;
+          if (next) {
+            next.el = vnode.el;
 
-          updateComponentPreRender(instance, next);
+            updateComponentPreRender(instance, next);
+          }
+          const { proxy } = instance;
+          const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
+          const preSubTree = instance.subTree;
+          // console.log("subtree:update", subTree, preSubTree);
+          instance.subTree = subTree;
+          patch(preSubTree, subTree, container, instance, anchor);
         }
-        const { proxy } = instance;
-        const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
-        const preSubTree = instance.subTree;
-        // console.log("subtree:update", subTree, preSubTree);
-        instance.subTree = subTree;
-        patch(preSubTree, subTree, container, instance, anchor);
+      },
+      {
+        // 视图异步更新
+        scheduler() {
+          queueJobs(instance.update);
+        },
       }
-    });
+    );
   }
   return {
     createApp: createAppAPI(render),
