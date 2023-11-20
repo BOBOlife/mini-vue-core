@@ -19,9 +19,10 @@ function patchProp(el, key, prevVal, nextVal) {
     }
   }
 }
-
-function insert(el, parent) {
-  parent.append(el);
+// anchor 锚点 插入这个节点位置  （之前）
+function insert(child, parent, anchor) {
+  parent.insertBefore(child, anchor || null);
+  // parent.append(el);
 }
 
 function remove(child) {
