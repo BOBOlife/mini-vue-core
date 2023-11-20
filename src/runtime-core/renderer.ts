@@ -5,6 +5,7 @@ import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 import { EMPTY_OBJECT } from "../shared";
 import { initProps } from "./componentProps";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 
 //创建一个自定义渲染器。通过提供平台特定的节点创建以及更改 API，你可以在非 DOM 环境中也享受到 Vue 核心运行时的特性。
 export function createRenderer(options) {
@@ -251,7 +252,22 @@ export function createRenderer(options) {
   }
 
   function processComponent(n1, n2, container, parentComponent, anchor) {
-    mountComponent(n2, container, parentComponent, anchor);
+    if (!n1) {
+      mountComponent(n2, container, parentComponent, anchor);
+    } else {
+      updateComponent(n1, n2);
+    }
+  }
+
+  function updateComponent(n1, n2) {
+    const instance = (n2.component = n1.component);
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2;
+      instance.update();
+    } else {
+      n2.el = n1.el;
+      instance.vnode = n2;
+    }
   }
 
   function mountElement(vnode: any, container: any, parentComponent, anchor) {
@@ -281,13 +297,13 @@ export function createRenderer(options) {
   }
 
   function mountComponent(initialVNode: any, container, parentComponent, anchor) {
-    const instance = createComponentInstance(initialVNode, parentComponent);
+    const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent));
 
     setupComponent(instance);
     setupRenderEffect(instance, initialVNode, container, anchor);
   }
   function setupRenderEffect(instance: any, initialVNode, container, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       // 分初始化和更新
       if (!instance.isMounted) {
         console.log("init");
@@ -303,6 +319,12 @@ export function createRenderer(options) {
         instance.isMounted = true;
       } else {
         console.log("update");
+        const { next, vnode } = instance;
+        if (next) {
+          next.el = vnode.el;
+
+          updateComponentPreRender(instance, next);
+        }
         const { proxy } = instance;
         const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
         const preSubTree = instance.subTree;
@@ -315,6 +337,13 @@ export function createRenderer(options) {
   return {
     createApp: createAppAPI(render),
   };
+}
+
+function updateComponentPreRender(instance, nextVNode) {
+  instance.vnode = nextVNode;
+  instance.next = null;
+
+  instance.props = nextVNode.props;
 }
 
 function getSequence(arr) {
