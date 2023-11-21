@@ -22,10 +22,30 @@ function parseChildren(context) {
       node = parseElement(context);
     }
   }
-
+  if (!node) {
+    node = parseText(context);
+  }
   nodes.push(node);
 
   return nodes;
+}
+
+function parseText(context: any) {
+  // 1. 获取content
+  const content = parseTextData(context, context.source.length);
+
+  return {
+    type: NodeTypes.TEXT,
+    content,
+  };
+}
+
+function parseTextData(context: any, length) {
+  const content = context.source.slice(0, length);
+
+  // 2. 推进
+  advanceBy(context, length);
+  return content;
 }
 
 function parseElement(context: any) {
@@ -64,10 +84,10 @@ function parseInterpolation(context) {
 
   const rawContentLength = closeIndex - openDelimiter.length;
 
-  const rawContent = context.source.slice(0, rawContentLength);
+  const rawContent = parseTextData(context, rawContentLength);
   const content = rawContent.trim(); // {{}} 里面的内容去空格
 
-  advanceBy(context, rawContentLength + closeDelimiter.length);
+  advanceBy(context, closeDelimiter.length);
   // 抽象语法树
   return {
     type: NodeTypes.INTERPOLATION,
