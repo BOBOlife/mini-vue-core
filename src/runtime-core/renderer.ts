@@ -311,7 +311,7 @@ export function createRenderer(options) {
           console.log("init");
           const { proxy } = instance;
           // render 返回的是一个h(...) 渲染函数 将它的this指向proxy对象 当调用this.xxx 相当于 proxy.xxx
-          const subTree = (instance.subTree = instance.render.call(proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
+          const subTree = (instance.subTree = instance.render.call(proxy, proxy)); // 返回的是 h('div',{}, 'xxx') 这样的树
           // console.log("subtree:init", subTree);
           // vnode -> patch
           // vnode -> element -> mountElement
@@ -328,7 +328,7 @@ export function createRenderer(options) {
             updateComponentPreRender(instance, next);
           }
           const { proxy } = instance;
-          const subTree = instance.render.call(proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
+          const subTree = instance.render.call(proxy, proxy); // 返回的是 h('div',{}, 'xxx') 这样的树
           const preSubTree = instance.subTree;
           // console.log("subtree:update", subTree, preSubTree);
           instance.subTree = subTree;
