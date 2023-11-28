@@ -6,6 +6,8 @@ export const isObject = (val) => {
 
 export const EMPTY_OBJECT = Object.create(null);
 
+export const isString = (value) => typeof value === "string";
+
 export const hasChanged = (val, newValue) => {
   return !Object.is(val, newValue);
 };
