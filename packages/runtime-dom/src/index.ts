@@ -21,7 +21,7 @@ function patchProp(el, key, prevVal, nextVal) {
 }
 // anchor 锚点 插入这个节点位置  （之前）
 function insert(child, parent, anchor) {
-  parent.insertBefore(child, anchor || null);
+  (parent as HTMLElement).insertBefore(child, anchor || null);
   // parent.append(el);
 }
 

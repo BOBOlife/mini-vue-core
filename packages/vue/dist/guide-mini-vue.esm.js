@@ -113,6 +113,17 @@ function cleanupEffect(effect) {
     });
     effect.deps.length = 0;
 }
+// 副作用函数的注册
+function effect(fn, options = {}) {
+    // fn
+    const _effect = new ReactiveEffect(fn, options.scheduler);
+    extend(_effect, options);
+    _effect.run();
+    const runner = _effect.run.bind(_effect);
+    runner.effect = _effect;
+    return runner;
+}
+/********************* 以下依赖收集 ***************************/
 const targetMap = new Map();
 function track(target, key) {
     if (!isTracking())
@@ -142,6 +153,7 @@ function trackEffects(dep) {
 function isTracking() {
     return shouldTrack && activeEffect !== undefined;
 }
+/*************** 以下触发依赖 ******************/
 function trigger(target, key) {
     let depsMap = targetMap.get(target);
     let deps = depsMap.get(key);
@@ -183,15 +195,6 @@ function triggerEffects(deps) {
     //     effect.run(); //run 就是的执行副作用函数
     //   }
     // }
-}
-function effect(fn, options = {}) {
-    // fn
-    const _effect = new ReactiveEffect(fn, options.scheduler);
-    extend(_effect, options);
-    _effect.run();
-    const runner = _effect.run.bind(_effect);
-    runner.effect = _effect;
-    return runner;
 }
 
 // 初始化 避免多次创建

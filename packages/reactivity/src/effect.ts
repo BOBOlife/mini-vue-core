@@ -23,7 +23,7 @@ export class ReactiveEffect {
     shouldTrack = true;
     activeEffect = this;
 
-    const result = this._fn();
+    const result = this._fn(); // 执行副作用函数 计算属性计算结果
     // reset
     shouldTrack = false;
     return result;
@@ -51,7 +51,7 @@ export function effect(fn, options: any = {}) {
   extend(_effect, options);
   _effect.run();
 
-  const runner: any = _effect.run.bind(_effect);
+  const runner: any = _effect.run.bind(_effect); // 这个返回了一个
   runner.effect = _effect;
   return runner;
 }
@@ -61,7 +61,7 @@ export function stop(runner) {
 }
 
 /********************* 以下依赖收集 ***************************/
-const targetMap = new Map();
+const targetMap = new WeakMap(); // 使用弱引用 避免内存泄漏
 
 export function track(target, key) {
   if (!isTracking()) return;
@@ -81,15 +81,15 @@ export function track(target, key) {
 
   if (!dep) {
     dep = new Set();
-    depsMap.set(key, dep);
+    depsMap.set(key, dep); // 对象的key 和 对应的effect依赖集合
   }
-  trackEffects(dep);
+  trackEffects(dep); // 收集副作用effect 函数
 }
 export function trackEffects(dep) {
   // 如果已经在 dep 中 不用重复添加
   if (dep.has(activeEffect)) return;
   dep.add(activeEffect);
-  activeEffect.deps.push(dep);
+  activeEffect.deps.push(dep); // effect 记录它被哪些 dep 收集了，反向记录是为了实现stop
 }
 export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
